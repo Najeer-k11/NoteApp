@@ -1,4 +1,4 @@
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 import 'package:todos/screens/home.dart';
 import 'package:todos/themes/themes.dart';
@@ -13,14 +13,14 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: lightTheme ,
-      themeMode: ThemeMode.system ,
-      darkTheme: darkTheme,
-      color: Colors.white,
+    return ScreenUtilInit(
+     builder: (context, child) => const MaterialApp(
+      home: HomePage(),
       debugShowCheckedModeBanner: false,
-      home: HomePage() ,
-
+      themeAnimationCurve: Curves.bounceInOut,
+      themeAnimationDuration: Duration(seconds: 1),
+     ),
+     designSize: const Size(315, 730),
     );
   }
 }

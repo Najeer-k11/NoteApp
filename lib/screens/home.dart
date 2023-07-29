@@ -1,11 +1,11 @@
-
-
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/intl.dart';
 import 'package:todos/database/fncs.dart';
 import 'package:todos/database/notemodel.dart';
-import 'package:todos/screens/noteview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:todos/themes/themes.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,6 +17,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int idx = 0;
   List<NoteModel> notes = [];
+
+  List<String> tk = ['All notes', 'Favourites', 'Important'];
 
   @override
   void initState() {
@@ -39,7 +41,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void upnote(int id,int isliked) async{
+  void upnote(int id, int isliked) async {
     await Functions().likeid(id, isliked);
     notefetch();
   }
@@ -51,137 +53,107 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double he = MediaQuery.of(context).size.height;
-    double wi = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 80,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        centerTitle: false,
-        systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.dark),
-        title : Text(
-          "ToNotes",
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-      ),
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: RefreshIndicator(
-        onRefresh: () async {
-          notefetch();
-        },
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          itemCount: notes.isNotEmpty ? notes.length : 1,
-          itemBuilder: (context, i) => notes.isEmpty? Container(
-            height: he/2,
-            child: Center(
-              child: Text('You dont have any notes',style: Theme.of(context).textTheme.bodyMedium,),
-            ),
-          ):
-          Container(
-                height: he /6,
-                width: wi,
-                decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    gradient: RadialGradient(
-                      colors: [
-                      Color(notes[i].col).withAlpha(200),
-                      Theme.of(context).cardColor,
-                    ],
-                    radius: 1,tileMode: TileMode.clamp,
-                    center: Alignment.topLeft
+          elevation: 0,
+          backgroundColor: scaffoldbg,
+          centerTitle: false,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Brightness.dark),
+          title: const Text(
+            'ToNotes',
+            style: TextStyle(color: Colors.white),
+          )),
+      backgroundColor: scaffoldbg,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 40.h,
+            child: Padding(
+              padding: EdgeInsets.only(left: 10.w, bottom: 2.h),
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: 3,
+                itemBuilder: (context, id) => InkWell(
+                  onTap: () {
+                    setState(() {
+                      idx = id;
+                    });
+                  },
+                  child: Container(
+                    width: 100.w,
+                    margin: EdgeInsets.only(right: 6.w),
+                    decoration: BoxDecoration(
+                        color: idx == id
+                            ? secondarycolor
+                            : secondarycolor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),),
+                        /// border: idx == id
+                        ///     ? const Border(
+                        ///         top: BorderSide(color: Colors.white, width: 1),
+                        ///         bottom:
+                        ///             BorderSide(color: Colors.white, width: 3),
+                        ///         left: BorderSide(color: Colors.white, width: 3),
+                        ///         right:
+                        ///             BorderSide(color: Colors.white, width: 1))
+                        ///     : const Border(
+                        ///         top: BorderSide.none,
+                        ///         bottom: BorderSide.none,
+                        ///         left: BorderSide.none,
+                        ///         right: BorderSide.none)),
+                    child: Center(
+                      child: Text(
+                        tk[id],
+                        style: TextStyle(
+                            fontSize: 10.sp,
+                            color: idx == id ? Colors.white : Colors.white38),
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(10)),
-                margin: const EdgeInsets.symmetric(
-                horizontal: 6, vertical: 4),
-                padding: EdgeInsets.all(18),
-                child: Stack(children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        notes[i].title,
-                        maxLines: 1,
-                        style: Theme.of(context).textTheme.titleMedium,
-                        overflow: TextOverflow.clip,
-                      ),
-                      SizedBox(
-                        height: 7,
-                      ),
-                      Expanded(
-                          child: Text(
-                        notes[i].desc,
-                        maxLines: 2,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                        overflow: TextOverflow.clip,
-                      )),
-                      Text(
-                        notes[i].date,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      )
-                    ],
                   ),
-                  Column(children: [
-                    Expanded(child: SizedBox()),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [ 
-                        InkWell(
-                          onTap: (){
-                            int val = notes[i].isliked == 1 ? 0 : 1 ;
-                            upnote(notes[i].id, val);
-                          },
-
-                          child: Container(
-                              height: 30,
-                              child: SvgPicture.asset(
-                                notes[i].isliked == 1 ?'assets/favf.svg':'assets/favo.svg',
-                                height: 24,
-                                color: notes[i].isliked == 1 ?Colors.red: Theme.of(context).iconTheme.color,
-                              ),
-                          ),
-                        ),
-                        SizedBox(width: wi*0.05,),
-                        InkWell(
-                            onTap: (){
-                              dtnote(notes[i].id);
-                            },
-                            child: Container(
-                              height: 30,
-                              child: SvgPicture.asset(
-                                'assets/delete.svg',
-                                height: 24,
-                                color: Theme.of(context).iconTheme.color,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ]),
-                ]),
+                ),
               ),
-        ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.symmetric(horizontal: 10.w),
+              child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                itemCount: notes.length,
+                itemBuilder: (context, id) => InkWell(
+                  onLongPress: (){
+                    dtnote(notes[id].id);
+                  },
+                  child: Container(
+                    height: 65.h,
+                    width: 290.w,
+                    margin: EdgeInsets.symmetric(vertical: 4.h),
+                    padding: EdgeInsets.symmetric(vertical: 4.h,horizontal: 6.w),
+                    decoration: BoxDecoration(
+                      color: primarycolor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(notes[id].title,style: TextStyle(
+                      color: textdark.withOpacity(0.8),
+                      fontSize: 13.sp
+                    ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Noteeditor(),
-            ),
-          );
-        },
-        elevation: 0,
-        backgroundColor: Theme.of(context).cardColor.withOpacity(0.4),
-        child: SvgPicture.asset(
-          'assets/note.svg',
-          height: 30,
-          color: Theme.of(context).iconTheme.color,
-        ),
+        backgroundColor: secondarycolor,
+        onPressed: () {},
+        child: Icon(Icons.add),
       ),
     );
   }
