@@ -1,6 +1,4 @@
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/intl.dart';
 import 'package:todos/database/fncs.dart';
 import 'package:todos/database/notemodel.dart';
 import 'package:flutter/material.dart';
