@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:todos/database/fncs.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:intl/intl.dart';
+import 'package:todos/themes/themes.dart';
 
 class Noteeditor extends StatefulWidget {
 
@@ -20,6 +22,7 @@ class _NoteeditorState extends State<Noteeditor> {
   TextEditingController titlecnt = TextEditingController();
   TextEditingController descnt = TextEditingController();
 
+  bool isimp = false;
   
 
 
@@ -32,6 +35,7 @@ class _NoteeditorState extends State<Noteeditor> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -42,7 +46,6 @@ class _NoteeditorState extends State<Noteeditor> {
           icon: Icon(
             Icons.chevron_left_rounded,
             color: Theme.of(context).iconTheme.color,
-            size: 24,
           ),
         ),
         actions: [
@@ -70,7 +73,6 @@ class _NoteeditorState extends State<Noteeditor> {
                       decoration:
                           BoxDecoration(color: color[0], shape: BoxShape.circle),
                     ),
-
                     SizedBox(width: 10,),
                     Text('Blue',style: Theme.of(context).textTheme.bodySmall,)
                   ],
@@ -104,7 +106,6 @@ class _NoteeditorState extends State<Noteeditor> {
               ),
               PopupMenuItem(
                 value: 2,
-                
                 child: Row(
                   children: [
                     Container(
@@ -145,21 +146,22 @@ class _NoteeditorState extends State<Noteeditor> {
                 );
               } else {
                 await noteInsert(titlecnt.text, descnt.text);
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('saved successfully'),),);
               }
             },
-          )
+          ),
         ],
       ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
-              height: 60,
               padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 4),
-              margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-              decoration: BoxDecoration(
+              margin:  EdgeInsets.symmetric(horizontal: 10.w,vertical: 5.h),
+              decoration: BoxDecoration (
                 borderRadius: BorderRadius.circular(10),
-                color: Theme.of(context).highlightColor
+                color: Theme.of(context).primaryColor.withOpacity(0.2),
               ),
               child: TextField(
                 controller: titlecnt,
@@ -167,33 +169,58 @@ class _NoteeditorState extends State<Noteeditor> {
                   hintText: 'Title',
                   focusedBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
-                  labelStyle: Theme.of(context).textTheme.titleMedium,
-                  hintStyle: Theme.of(context).textTheme.titleMedium
+                  labelStyle: TextStyle(color: Colors.white),
+                  hintStyle: Theme.of(context).textTheme.bodyMedium
                 ),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
             Container(
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.symmetric(horizontal: 10,vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 10.w,vertical: 4.h),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: Theme.of(context).highlightColor
+                color: Theme.of(context).primaryColor.withOpacity(0.2),
               ),
-              margin: const EdgeInsets.symmetric(horizontal: 10),
+              margin:  EdgeInsets.symmetric(horizontal: 10.w,vertical: 5.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Important"),
+                  Switch(
+                  activeColor: secondarycolor,
+                  value: isimp,
+                  activeTrackColor: Theme.of(context).primaryColor,
+                  onChanged: (bool imp){
+                    setState(() {
+                      isimp = imp;
+                    });
+                  })
+                ],
+              )
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.symmetric(horizontal: 10.w,vertical: 4.h),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Theme.of(context).primaryColor.withOpacity(0.2)
+              ),
+              margin: EdgeInsets.symmetric(horizontal: 10.w,vertical: 5.h),
               child: TextField(
                 controller: descnt,
                 maxLines: null,
                 decoration: InputDecoration(
                   hintText: 'description',
                   enabledBorder: InputBorder.none,
-                  hintStyle: Theme.of(context).textTheme.bodyMedium,
+                  hintStyle:Theme.of(context).textTheme.bodyMedium,
                   focusedBorder: InputBorder.none,
-                  labelStyle: Theme.of(context).textTheme.bodyMedium
+                  labelStyle: TextStyle(color: Colors.white),
                 ),
                 style: Theme.of(context).textTheme.bodyMedium
               ),
             ),
+
           ],
         ),
       ),

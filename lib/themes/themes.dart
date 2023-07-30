@@ -9,4 +9,3 @@ const textdark = Color(0xffffffff);
 const textlight = Color(0xff121232);
 const textshade2light = Colors.black45;
 const textshade2dark = Colors.white60;
-
