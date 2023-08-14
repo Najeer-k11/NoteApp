@@ -1,8 +1,8 @@
-
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:todos/database/notemodel.dart';
 export 'dbhelper.dart';
-
 
 class Databasehelper {
   Database? _database;
@@ -14,27 +14,23 @@ class Databasehelper {
   String col5 = 'color';
   String col6 = 'isliked';
 
-  Future<Database> get database async{
-
-    
-    if(_database  != null){
+  Future<Database> get database async {
+    if (_database != null) {
       return _database!;
     }
     _database = await initDB();
     return _database!;
-
   }
 
-
-  Future<String> get fullpath async{
+  Future<String> get fullpath async {
     const name = 'tonotes.db';
     var paths = await getDatabasesPath();
-    return join(paths,name);
+    return join(paths, name);
   }
 
-  Future<Database> initDB() async{
+  Future<Database> initDB() async {
     final path = await fullpath;
-    var database = await openDatabase(path,onCreate:  (db, version) async{
+    var database = await openDatabase(path, onCreate: (db, version) async {
       await db.execute('''
         CREATE TABLE IF NOT EXISTS $tablename(
           $col1 INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,10 +41,42 @@ class Databasehelper {
           $col6 INTEGER NOT NULL
         )
       ''');
-    },singleInstance: true,version: 1);
+    }, singleInstance: true, version: 1);
     return database as Database;
   }
+
+  Future<List<NoteModel>> fetchall() async {
+    Database db = await Databasehelper().database;
+    var notes = await db.rawQuery('SELECT * FROM tonotes ');
+    return notes.map((e) => NoteModel.fromJson(e)).toList();
+  }
+
+  void Insert(String title , String desc , String date , int colvalue , int fav) async {
+    Database db = await Databasehelper().database;
+    await db.rawInsert(
+        '''INSERT INTO tonotes(title,desc,createdat,color,isliked) VALUES(?,?,?,?,?)''',
+        [
+          title,
+          desc,
+          date,
+          colvalue,
+          fav
+        ]);
+  }
+
+  void Delete(int id) async {
+    Database db = await Databasehelper().database;
+    await db.rawDelete('''
+DELETE FROM tonotes WHERE id = ? 
+''', [id]);
+  }
+
+
+  Future<List<NoteModel>> favNotes() async {
+    Database db = await Databasehelper().database;
+    var notes = await db.rawQuery(
+      'SELECT * FROM tonotes WHERE isliked = ? ' ,[1]
+    );
+    return notes.map((e) => NoteModel.fromJson(e)).toList();
+  }
 }
-
-
-

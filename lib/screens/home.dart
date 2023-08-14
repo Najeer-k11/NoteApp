@@ -1,11 +1,10 @@
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:todos/database/fncs.dart';
-import 'package:todos/database/notemodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:todos/screens/noteview.dart';
-import 'package:todos/themes/themes.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:todos/components/tile.dart';
+import 'package:todos/database/dbhelper.dart';
+import 'package:todos/database/notemodel.dart';
+import 'package:todos/screens/noteMaker.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,213 +14,176 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int idx = 0;
-  List<NoteModel> notes = [];
-
-  List<String> tk = ['All notes', 'Favourites', 'Important'];
+  bool isloading = true;
+  int currentid = 0;
+  List<String> li = ['All Notes', 'favorites', 'todos'];
+  List<List<NoteModel>> notes = [[], [], []];
 
   @override
   void initState() {
+    if (isloading) {
+      initNotes();
+    }
     // TODO: implement initState
     super.initState();
-    notefetch();
   }
 
-  @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-    notefetch();
-  }
 
-  void notefetch() async {
-    var data = await Functions().fetchnotes();
+
+  initNotes() async {
+    var dummy = await Databasehelper().fetchall();
+    var dum = await Databasehelper().favNotes();
     setState(() {
-      notes = data;
+      notes[0] = dummy.reversed.toList();
+      notes[1] = dum.reversed.toList();
+      isloading = false;
     });
   }
 
-  void upnote(int id, int isliked) async {
-    await Functions().likeid(id, isliked);
-    notefetch();
-  }
-
   void dtnote(int id) async {
-    await Functions().deleteItem(id);
-    notefetch();
+    Databasehelper().Delete(id);
+    ScaffoldMessenger.maybeOf(context)!.showSnackBar(
+      const SnackBar(
+        content: Text('Deleted Successfully'),
+      ),
+    );
+    initNotes();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          centerTitle: false,
-          systemOverlayStyle: const SystemUiOverlayStyle(
-              statusBarColor: Colors.transparent,
-              statusBarIconBrightness: Brightness.dark),
-          title: Text(
-            'ToNotes',
-            style: Theme.of(context).textTheme.titleLarge,
-          )),
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 40.h,
-            child: Padding(
-              padding: EdgeInsets.only(left: 10.w, bottom: 2.h),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        title: Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(
+                "To Notes",
+                style: Theme.of(context).textTheme.displayMedium,
+              ),
+            ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: IconButton(onPressed: (){
+              initNotes();
+            },
+            icon: Icon(Icons.refresh_rounded),
+            color: Theme.of(context).focusColor,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: IconButton(onPressed: (){},
+            icon: Icon(Icons.search_rounded ,),
+            color: Theme.of(context).focusColor,
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 40,
               child: ListView.builder(
+                itemCount: li.length,
                 scrollDirection: Axis.horizontal,
-                itemCount: 3,
                 itemBuilder: (context, id) => InkWell(
                   onTap: () {
                     setState(() {
-                      idx = id;
+                      currentid = id;
                     });
                   },
                   child: Container(
-                    width: 100.w,
-                    margin: EdgeInsets.only(right: 6.w),
+                    width: li[id].length * 10.13,
+                    margin: EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                     decoration: BoxDecoration(
-                      color: idx == id
-                          ? secondarycolor
-                          : secondarycolor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(60),
+                      border: Border(
+                        top: BorderSide(
+                            color: currentid == id
+                                ? Theme.of(context).focusColor
+                                : Theme.of(context).disabledColor),
+                        left: BorderSide(
+                            color: currentid == id
+                                ? Theme.of(context).focusColor
+                                : Theme.of(context).disabledColor),
+                        bottom: BorderSide(
+                            color: currentid == id
+                                ? Theme.of(context).focusColor
+                                : Theme.of(context).disabledColor),
+                        right: BorderSide(
+                            color: currentid == id
+                                ? Theme.of(context).focusColor
+                                : Theme.of(context).disabledColor),
+                      ),
                     ),
-      
-                    /// border: idx == id
-                    ///     ? const Border(
-                    ///         top: BorderSide(color: Colors.white, width: 1),
-                    ///         bottom:
-                    ///             BorderSide(color: Colors.white, width: 3),
-                    ///         left: BorderSide(color: Colors.white, width: 3),
-                    ///         right:
-                    ///             BorderSide(color: Colors.white, width: 1))
-                    ///     : const Border(
-                    ///         top: BorderSide.none,
-                    ///         bottom: BorderSide.none,
-                    ///         left: BorderSide.none,
-                    ///         right: BorderSide.none)),
                     child: Center(
                       child: Text(
-                        tk[id],
-                        style: TextStyle(
-                            fontSize: 10.sp,
-                            color: idx == id ? Colors.white : Theme.of(context).textTheme.bodyMedium!.color),
+                        li[id],
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w500,
+                            color: currentid == id
+                                ? Theme.of(context).focusColor
+                                : Theme.of(context).disabledColor),
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: notes.isEmpty
-                ? const Center(
-                    child: Text(
-                      "You don't have any notes",
-                      style: TextStyle(color: Colors.white),
+            const SizedBox(
+              height: 10,
+            ),
+            notes[currentid].isEmpty
+                ? Container(
+                    height: 300,
+                    width: MediaQuery.of(context).size.width,
+                    child: Center(
+                      child: Text(
+                        'You dont have any ${li[currentid]}',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                     ),
                   )
-                : Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    margin: EdgeInsets.symmetric(horizontal: 10.w,vertical: 10.h),
-                    child: ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      itemCount: notes.length,
-                      itemBuilder: (context, id) => InkWell(
-                        onLongPress: () {},
-                        child: Container(
-                          height: 65.h,
-                          width: 290.w,
-                          margin: EdgeInsets.symmetric(vertical: 4.h),
-                          padding: EdgeInsets.symmetric(
-                              vertical: 4.h, horizontal: 6.w),
-                          decoration: BoxDecoration(
-                            color: secondarycolor.withOpacity(0.2),
-                            
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 20.h,
-                                width: 5,
-                                decoration:
-                                    BoxDecoration(color: Color(notes[id].col),borderRadius: BorderRadius.circular(10)),
-                              ),
-                              SizedBox( width: 10.w,),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      notes[id].title,
-                                      style: Theme.of(context).textTheme.bodyMedium,
-                                      maxLines: 1,
-                                    ),
-                                  ),
-                                  SizedBox(height: 5.h,),
-                                  Align(
-                                    alignment: Alignment.bottomLeft,
-                                    child: Text(
-                                      notes[id].date,
-                                      style: Theme.of(context).textTheme.bodySmall
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const Expanded(
-                                child: SizedBox(),
-                              ),
-                              InkWell(
-                                onTap: (){
-                                  int i = notes[id].isliked == 1 ? 0 : 1;
-                                  upnote(id,i);
-                                },
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: notes[id].isliked.isEven ? SvgPicture.asset('assets/favo.svg',color: Theme.of(context).iconTheme.color!.withOpacity(0.5),height: 18.h,): SvgPicture.asset('assets/favf.svg',color: Colors.red,height: 18.h,),
-                                ),
-                              ),
-                              SizedBox(width: 10.w,),
-                              InkWell(
-                                onTap: (){
-                                  dtnote(id);
-                                },
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: SvgPicture.asset('assets/delete.svg',color: Theme.of(context).iconTheme.color!.withOpacity(0.5),height: 18.h,),
-                                ),
-                              ),
-                              
-                            ],
-                          ),
+                : Expanded(
+                    child: Container(
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: notes[currentid].length,
+                        itemBuilder: (context, id) => PageTile(
+                          iconColor: notes[currentid][id].col,
+                          likeColor: notes[currentid][id].isliked == 1
+                              ? Colors.pink
+                              : Theme.of(context).focusColor,
+                          title: notes[currentid][id].title,
+                          subtitle: notes[currentid][id].desc,
+                          date: notes[currentid][id].date,
+                          delete: () => dtnote(notes[currentid][id].id),
+                          like: () {},
                         ),
                       ),
                     ),
                   ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: secondarycolor,
+        backgroundColor: Theme.of(context).focusColor,
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const Noteeditor(),
+              builder: (context) => const NoteMaker(),
             ),
           );
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add_circle_outline_rounded),
       ),
     );
   }
