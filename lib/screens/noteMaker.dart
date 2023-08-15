@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:todos/database/dbhelper.dart';
@@ -37,6 +38,9 @@ class _NoteMakerState extends State<NoteMaker> {
                 "Note Editor ",
                 style: GoogleFonts.poppins(color: Colors.black),
               ),
+         systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: Theme.of(context).scaffoldBackgroundColor,
+            statusBarIconBrightness: Theme.of(context).brightness),
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
@@ -146,7 +150,7 @@ class _NoteMakerState extends State<NoteMaker> {
       floatingActionButton: FloatingActionButton.extended(onPressed: (){
         savenote(titleController.text, descController.text, colvalue);
       },
-      label: Icon(Icons.save_alt_rounded),
+      label: Icon(Icons.save_alt_rounded,color: Theme.of(context).scaffoldBackgroundColor,),
       backgroundColor: Theme.of(context).focusColor,
       ),
     );

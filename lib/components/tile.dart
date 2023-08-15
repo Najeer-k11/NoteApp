@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class PageTile extends StatelessWidget {
 
+  final IconData likeicon;
   final String title;
   final String subtitle;
   final String date;
@@ -10,7 +11,7 @@ class PageTile extends StatelessWidget {
   final void Function() delete;
   final void Function() like;
 
-  const PageTile({super.key,required this.iconColor,required this.likeColor,required this.title,required this.subtitle,required this.date,required this.delete, required this.like});
+  const PageTile({super.key, required this.likeicon,required this.iconColor,required this.likeColor,required this.title,required this.subtitle,required this.date,required this.delete, required this.like});
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +88,7 @@ class PageTile extends StatelessWidget {
                                         InkWell(
                                           onTap: like,
                                           child: Icon(
-                                            Icons.favorite_rounded,
+                                            likeicon,
                                             size: 21,
                                             color: likeColor,
                                           ),

@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:todos/screens/home.dart';
+import 'package:todos/screens/noteMaker.dart';
 import 'package:todos/themes/themes.dart';
 
 
@@ -19,6 +20,10 @@ class MainApp extends StatelessWidget {
      theme: lightTheme,
      themeMode: ThemeMode.system,
      debugShowCheckedModeBanner: false,
+     routes: {
+      '/homepage' :(context) => const HomePage(),
+      '/noteMaker':(context) => const NoteMaker(),
+     },
     );
   }
 }

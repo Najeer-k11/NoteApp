@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:todos/components/tile.dart';
 import 'package:todos/database/dbhelper.dart';
 import 'package:todos/database/notemodel.dart';
 import 'package:todos/screens/noteMaker.dart';
+import 'package:todos/screens/noteupdater.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,8 +29,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-
-
   initNotes() async {
     var dummy = await Databasehelper().fetchall();
     var dum = await Databasehelper().favNotes();
@@ -37,6 +37,12 @@ class _HomePageState extends State<HomePage> {
       notes[1] = dum.reversed.toList();
       isloading = false;
     });
+  }
+
+  void noteLike(int id, int liked) async {
+    int like = liked == 1 ? 0 : 1;
+    Databasehelper().likeUpdate(id, like);
+    initNotes();
   }
 
   void dtnote(int id) async {
@@ -56,27 +62,34 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         title: Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text(
-                "To Notes",
-                style: Theme.of(context).textTheme.displayMedium,
-              ),
-            ),
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Text(
+            "To Notes",
+            style: Theme.of(context).textTheme.displayMedium,
+          ),
+        ),
+        systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: Theme.of(context).scaffoldBackgroundColor,
+            statusBarIconBrightness: Theme.of(context).brightness),
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: IconButton(onPressed: (){
-              initNotes();
-            },
-            icon: const Icon(Icons.refresh_rounded),
-            color: Theme.of(context).focusColor,
+            child: IconButton(
+              onPressed: () {
+                initNotes();
+              },
+              icon: const Icon(Icons.refresh_rounded),
+              color: Theme.of(context).focusColor,
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: IconButton(onPressed: (){},
-            icon: const Icon(Icons.search_rounded ,),
-            color: Theme.of(context).focusColor,
+            child: IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.search_rounded,
+              ),
+              color: Theme.of(context).focusColor,
             ),
           ),
         ],
@@ -100,7 +113,8 @@ class _HomePageState extends State<HomePage> {
                   },
                   child: Container(
                     width: li[id].length * 10.13,
-                    margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(60),
                       border: Border(
@@ -126,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                       child: Text(
                         li[id],
                         style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w500,
                             color: currentid == id
                                 ? Theme.of(context).focusColor
                                 : Theme.of(context).disabledColor),
@@ -155,16 +169,31 @@ class _HomePageState extends State<HomePage> {
                       child: ListView.builder(
                         physics: const BouncingScrollPhysics(),
                         itemCount: notes[currentid].length,
-                        itemBuilder: (context, id) => PageTile(
-                          iconColor: notes[currentid][id].col,
-                          likeColor: notes[currentid][id].isliked == 1
-                              ? Colors.pink
-                              : Theme.of(context).focusColor,
-                          title: notes[currentid][id].title,
-                          subtitle: notes[currentid][id].desc,
-                          date: notes[currentid][id].date,
-                          delete: () => dtnote(notes[currentid][id].id),
-                          like: () {},
+                        itemBuilder: (context, id) => InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    NoteUpdate(no: notes[currentid][id]),
+                              ),
+                            );
+                          },
+                          child: PageTile(
+                            likeicon: notes[currentid][id].isliked == 0
+                                ? Icons.favorite_border_rounded
+                                : Icons.favorite_rounded,
+                            iconColor: notes[currentid][id].col,
+                            likeColor: notes[currentid][id].isliked == 1
+                                ? Colors.pink
+                                : Theme.of(context).focusColor,
+                            title: notes[currentid][id].title,
+                            subtitle: notes[currentid][id].desc,
+                            date: notes[currentid][id].date,
+                            delete: () => dtnote(notes[currentid][id].id),
+                            like: () => noteLike(notes[currentid][id].id,
+                                notes[currentid][id].isliked),
+                          ),
                         ),
                       ),
                     ),
@@ -178,11 +207,14 @@ class _HomePageState extends State<HomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const NoteMaker(),
+              builder: (context) => NoteMaker(),
             ),
           );
         },
-        child: const Icon(Icons.add_circle_outline_rounded),
+        child: Icon(
+          Icons.add_circle_outline_rounded,
+          color: Theme.of(context).scaffoldBackgroundColor,
+        ),
       ),
     );
   }

@@ -71,6 +71,17 @@ DELETE FROM tonotes WHERE id = ?
 ''', [id]);
   }
 
+  void likeUpdate(int id, int isLiked) async {
+    Database db = await Databasehelper().database;
+    await db.rawUpdate('UPDATE tonotes SET isliked = ? WHERE id = ?',[isLiked , id]);
+  }
+
+  void updateNote(NoteModel no) async {
+    Database db = await Databasehelper().database;
+    await db.rawUpdate('UPDATE tonotes SET title = ? , desc = ? , isliked = ? WHERE id = ? ',[
+      no.title , no.desc ,no.isliked , no.id
+    ]);
+  }
 
   Future<List<NoteModel>> favNotes() async {
     Database db = await Databasehelper().database;

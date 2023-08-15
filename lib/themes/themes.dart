@@ -17,6 +17,7 @@ ThemeData lightTheme = ThemeData(
   shadowColor: Colors.black.withOpacity(0.1),
   focusColor: Colors.black,
   disabledColor: Colors.grey,
+  brightness: Brightness.dark,
   textTheme: TextTheme(
     displayMedium: GoogleFonts.poppins(color: Colors.black,fontWeight: FontWeight.w500,fontSize: 35),
     bodyMedium: GoogleFonts.poppins(color: Colors.black,fontWeight: FontWeight.w500),
@@ -33,6 +34,7 @@ ThemeData darkTheme = ThemeData(
   focusColor: Colors.white,
   disabledColor: Colors.grey,
   shadowColor: Colors.white.withOpacity(0.3),
+  brightness: Brightness.light,
   textTheme: TextTheme(
     displayMedium: GoogleFonts.poppins(color: Colors.white,fontWeight: FontWeight.w500,fontSize: 35),
     bodyMedium: GoogleFonts.poppins(color: Colors.white,fontWeight: FontWeight.w500),
