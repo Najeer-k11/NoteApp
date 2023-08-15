@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:todos/components/tile.dart';
 import 'package:todos/database/dbhelper.dart';
@@ -69,14 +68,14 @@ class _HomePageState extends State<HomePage> {
             child: IconButton(onPressed: (){
               initNotes();
             },
-            icon: Icon(Icons.refresh_rounded),
+            icon: const Icon(Icons.refresh_rounded),
             color: Theme.of(context).focusColor,
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: IconButton(onPressed: (){},
-            icon: Icon(Icons.search_rounded ,),
+            icon: const Icon(Icons.search_rounded ,),
             color: Theme.of(context).focusColor,
             ),
           ),
@@ -101,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                   },
                   child: Container(
                     width: li[id].length * 10.13,
-                    margin: EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                    margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(60),
                       border: Border(
