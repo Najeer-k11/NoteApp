@@ -34,11 +34,11 @@ class _NoteMakerState extends State<NoteMaker> {
         centerTitle: false,
         foregroundColor: Theme.of(context).focusColor,
         backgroundColor: Colors.transparent,
-        title:  Text(
-                "Note Editor ",
-                style: GoogleFonts.poppins(color: Colors.black),
-              ),
-         systemOverlayStyle: SystemUiOverlayStyle(
+        title: Text(
+          "Note Editor ",
+          style: GoogleFonts.poppins(color: Colors.black),
+        ),
+        systemOverlayStyle: SystemUiOverlayStyle(
             statusBarColor: Theme.of(context).scaffoldBackgroundColor,
             statusBarIconBrightness: Theme.of(context).brightness),
       ),
@@ -50,8 +50,9 @@ class _NoteMakerState extends State<NoteMaker> {
           child: Column(
             children: [
               Container(
-                decoration: BoxDecoration(color: Theme.of(context).disabledColor.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).disabledColor.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10)),
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 padding: const EdgeInsets.symmetric(horizontal: 6),
                 child: TextField(
@@ -70,11 +71,10 @@ class _NoteMakerState extends State<NoteMaker> {
                 height: 70,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).disabledColor.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10)
-                ),
+                    color: Theme.of(context).disabledColor.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10)),
                 padding: const EdgeInsets.symmetric(horizontal: 4),
-                margin: const EdgeInsets.symmetric(horizontal: 4,vertical: 6),
+                margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -93,12 +93,11 @@ class _NoteMakerState extends State<NoteMaker> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 6),
-                margin: const EdgeInsets.symmetric(horizontal: 4,vertical: 0),
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).disabledColor.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10)
-                ),
+                    color: Theme.of(context).disabledColor.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10)),
                 height: MediaQuery.of(context).size.height * 0.06,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -113,10 +112,14 @@ class _NoteMakerState extends State<NoteMaker> {
                           });
                         },
                         child: Container(
-                          decoration:
-                              BoxDecoration(
-                                border: Border.all(width: 4,color: colindex == ix ? Theme.of(context).focusColor: Colors.transparent),
-                                shape: BoxShape.circle, color: cols[ix]),
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  width: 4,
+                                  color: colindex == ix
+                                      ? Theme.of(context).focusColor
+                                      : Colors.transparent),
+                              shape: BoxShape.circle,
+                              color: cols[ix]),
                         ),
                       ),
                     ),
@@ -127,9 +130,11 @@ class _NoteMakerState extends State<NoteMaker> {
                 height: 8,
               ),
               Container(
-                decoration: BoxDecoration(color: Theme.of(context).disabledColor.withOpacity(0.2),borderRadius: BorderRadius.circular(10)),
-                margin:const EdgeInsets.symmetric(horizontal: 4),
-                padding:const EdgeInsets.symmetric(horizontal: 6),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).disabledColor.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10)),
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 6),
                 child: TextField(
                   controller: descController,
                   style: Theme.of(context).textTheme.bodyMedium,
@@ -147,29 +152,36 @@ class _NoteMakerState extends State<NoteMaker> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(onPressed: (){
-        savenote(titleController.text, descController.text, colvalue);
-      },
-      label: Icon(Icons.save_alt_rounded,color: Theme.of(context).scaffoldBackgroundColor,),
-      backgroundColor: Theme.of(context).focusColor,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          savenote(titleController.text, descController.text, colvalue);
+        },
+        label: Icon(
+          Icons.save_alt_rounded,
+          color: Theme.of(context).scaffoldBackgroundColor,
+        ),
+        backgroundColor: Theme.of(context).focusColor,
       ),
     );
   }
 
+  bool isnull() => (titleController.text.isEmpty || descController.text.isEmpty)
+      ? true
+      : false;
 
-  bool isnull() =>  (titleController.text.isEmpty || descController.text.isEmpty ) ? true : false ;
-
-  void savenote(String txt, String desc , int col) async {
+  void savenote(String txt, String desc, int col) async {
     String dtnow = DateFormat('EEE , dd/mm/yyyy').format(DateTime.now());
     int fav = switchpos ? 1 : 0;
-    if(isnull()){
-      ScaffoldMessenger.maybeOf(context)!.showSnackBar(const SnackBar(content: Text("Fields must not be empty"),),);
-    }else{
+    if (isnull()) {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(
+        const SnackBar(
+          content: Text("Fields must not be empty"),
+        ),
+      );
+    } else {
       Databasehelper().Insert(txt, desc, dtnow, col, fav);
-      ScaffoldMessenger.maybeOf(context)!.showSnackBar(const SnackBar(content: Text("Saved Successfully")));
+      ScaffoldMessenger.maybeOf(context)!
+          .showSnackBar(const SnackBar(content: Text("Saved Successfully")));
     }
-
   }
-
-
 }
